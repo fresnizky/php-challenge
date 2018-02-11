@@ -1,0 +1,17 @@
+FROM php:7-fpm
+
+WORKDIR /var/www
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git zip zlib1g-dev
+
+RUN curl --silent --show-error https://getcomposer.org/installer | php
+
+RUN docker-php-ext-install pdo_mysql zip
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug \
+    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_port=9001" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
